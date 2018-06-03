@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from UI_Files.startScreen import Ui_LoginScreen
 from UI_Files.reportScreen import Ui_reportScreen
 from UI_Files.issueScreen import Ui_issueScreen
+from UI_Files.bookSearchScreen import Ui_BookSearch
 
 def messageBox(self, flag):
     if flag == 1:
@@ -36,7 +37,7 @@ class AppWindow(QMainWindow):
             self.ui.issueBookBtn.clicked.connect(self.issueBooks)
             self.ui.editBookDetails.clicked.connect(self.editBookDetails)
             self.ui.editEmpDetails.clicked.connect(self.editEmployeeDetails)
-            self.ui.searchBooksBtn.clicked.connect(self.searchBooks)
+            self.ui.searchBooksBtn.clicked.connect(self.searchBooksWin)
             self.ui.returnBookBtn.clicked.connect(self.returnBooks)
             self.show()
         elif uname == "" or passwd == "":
@@ -61,8 +62,17 @@ class AppWindow(QMainWindow):
     def editEmployeeDetails(self):
         print("Edit Employee Details")
 
+    def searchBooksWin(self):
+        self.close()
+        self.ui = Ui_BookSearch()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.back)
+        self.ui.searchStr.textEdited.connect(self.searchBooks)
+        self.show()
+
     def searchBooks(self):
-        print("Search Books")
+        print(self.ui.searchStr.text())
+        # print(self.ui.comboBox.getValue())
 
     def issueBooks(self):
         book1 = self.ui.book1Text.text()
