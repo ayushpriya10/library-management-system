@@ -6,13 +6,15 @@ Mechanics of Materials,Beer Johnston
 Engineering Mechanics of Solids,Popov
 Numeric Methods for Scientists and Engineers,R.W. Hamming.
 Fundamentals of Engineering Numerical Analysis,Parviz Moin
-Fundamentals of Heat and Mass Transfer,Incorpera, DeWitt, Lavine, Bergman
-Fundamentals of fluid Mechanics,Bruce R. Munson, Wade W. Huebsch, Alric P. Rothmayer.
+Fundamentals of Heat and Mass Transfer,Incorpera
+Fundamentals of fluid Mechanics,Bruce R. Munson
 Fluid Mechanics,Cengel and Kimbala
 A text book of Machine Design,R.S Khurmi and J.K Gupta
 The Mechanical Design Process,David G. Ullman
 Instrumentation for Process Measurement and Control,Norman A. Anderson
-Refrigeration and Air Conditioning Technology,Bill Johnson, Bill Whiteman, John Tomczyck
+Refrigeration and Air Conditioning Technology,Bill Johnson
 Refrigeration,Hundi
 Fundamentals of Flight,Richard S. Shevell
 A Textbook of Automobile Engineering,R.K. Rajput
+Algorithms to Live By: The Computer Science of Human Decisions,Brian Christian and Tom Griffiths
+Code: The Hidden Language of Computer Hardware and Software,Charles Petzold

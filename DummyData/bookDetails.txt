@@ -1,0 +1,20 @@
+Engineering Drawing,Basant Agarwal and C M Agarwal,Penguin Random House,3640,G000
+Fundamentals of Engineering Thermodynamics,Michael J. Moran and Howard N. Shapiro,Hachette Livre,2759,G001
+800 solved problems in Vector Mechanics for Engineers (Vol 1),Joseph Shelley,HarperCollins,4686,G002
+700 solved problems in Vector Mechanics for Engineers (Vol 2),Joseph Shelley,Pan Macmillan,1401,G003
+Mechanics of Materials,Beer Johnston,Pearson Education,3959,G004
+Mechanics of Materials,Beer Johnston,Pearson Education,4145,M000
+Engineering Mechanics of Solids,Popov,Oxford University Press,4934,M001
+Numeric Methods for Scientists and Engineers,R.W. Hamming.,Bloomsbury,4858,M002
+Fundamentals of Engineering Numerical Analysis,Parviz Moin,Simon & Schuster,4981,M003
+Fundamentals of Heat and Mass Transfer,Incorpera,John Wiley & Sons,2136,M004
+Fundamentals of Heat and Mass Transfer,Incorpera,John Wiley & Sons,4728,T000
+Fundamentals of fluid Mechanics,Bruce R. Munson,Faber Independent Alliance,2923,T001
+Fluid Mechanics,Cengel and Kimbala,Penguin Random House,4023,T002
+A text book of Machine Design,R.S Khurmi and J.K Gupta,Hachette Livre,2976,T003
+The Mechanical Design Process,David G. Ullman,HarperCollins,2534,T004
+The Mechanical Design Process,David G. Ullman,HarperCollins,3574,F000
+Instrumentation for Process Measurement and Control,Norman A. Anderson,Pan Macmillan,4843,F001
+Refrigeration and Air Conditioning Technology,Bill Johnson,Pearson Education,1982,F002
+Refrigeration,Hundi,Oxford University Press,2107,F003
+Fundamentals of Flight,Richard S. Shevell,Bloomsbury,1221,F004
