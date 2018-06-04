@@ -5,6 +5,7 @@ from UI_Files.startScreen import Ui_LoginScreen
 from UI_Files.reportScreen import Ui_reportScreen
 from UI_Files.issueScreen import Ui_issueScreen
 from UI_Files.bookSearchScreen import Ui_BookSearch
+from UI_Files.bookFormScreen import Ui_BookForm
 
 def messageBox(self, flag):
     if flag == 1:
@@ -19,9 +20,10 @@ def messageBox(self, flag):
 class AppWindow(QMainWindow):
     def __init__(self):
         super(AppWindow, self).__init__()
-        self.ui = Ui_LoginScreen()
+        self.ui = Ui_BookForm()
+        # self.ui = Ui_LoginScreen()
         self.ui.setupUi(self)
-        self.ui.loginButton.clicked.connect(self.login)
+        # self.ui.loginButton.clicked.connect(self.login)
         self.adminCollection = MongoClient("mongodb://localhost:27017/")["lms"]["admins"]
 
     def login(self):
@@ -72,7 +74,7 @@ class AppWindow(QMainWindow):
 
     def searchBooks(self):
         print(self.ui.searchStr.text())
-        # print(self.ui.comboBox.getValue())
+        print(self.ui.comboBox.currentText())
 
     def issueBooks(self):
         book1 = self.ui.book1Text.text()
@@ -109,7 +111,7 @@ class AppWindow(QMainWindow):
         self.ui.issueBookBtn.clicked.connect(self.issueBooks)
         self.ui.editBookDetails.clicked.connect(self.editBookDetails)
         self.ui.editEmpDetails.clicked.connect(self.editEmployeeDetails)
-        self.ui.searchBooksBtn.clicked.connect(self.searchBooks)
+        self.ui.searchBooksBtn.clicked.connect(self.searchBooksWin)
         self.ui.returnBookBtn.clicked.connect(self.returnBooks)
         self.show()
 

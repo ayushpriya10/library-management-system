@@ -1,0 +1,18 @@
+Engineering Drawing,Basant Agarwal and C M Agarwal
+Fundamentals of Engineering Thermodynamics,Michael J. Moran and Howard N. Shapiro
+800 solved problems in Vector Mechanics for Engineers (Vol 1),Joseph Shelley
+700 solved problems in Vector Mechanics for Engineers (Vol 2),Joseph Shelley
+Mechanics of Materials,Beer Johnston
+Engineering Mechanics of Solids,Popov
+Numeric Methods for Scientists and Engineers,R.W. Hamming.
+Fundamentals of Engineering Numerical Analysis,Parviz Moin
+Fundamentals of Heat and Mass Transfer,Incorpera, DeWitt, Lavine, Bergman
+Fundamentals of fluid Mechanics,Bruce R. Munson, Wade W. Huebsch, Alric P. Rothmayer.
+Fluid Mechanics,Cengel and Kimbala
+A text book of Machine Design,R.S Khurmi and J.K Gupta
+The Mechanical Design Process,David G. Ullman
+Instrumentation for Process Measurement and Control,Norman A. Anderson
+Refrigeration and Air Conditioning Technology,Bill Johnson, Bill Whiteman, John Tomczyck
+Refrigeration,Hundi
+Fundamentals of Flight,Richard S. Shevell
+A Textbook of Automobile Engineering,R.K. Rajput
