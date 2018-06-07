@@ -20,11 +20,14 @@ def messageBox(self, flag):
 class AppWindow(QMainWindow):
     def __init__(self):
         super(AppWindow, self).__init__()
-        self.ui = Ui_BookForm()
-        # self.ui = Ui_LoginScreen()
+        # self.ui = Ui_BookForm()
+        self.ui = Ui_LoginScreen()
         self.ui.setupUi(self)
-        # self.ui.loginButton.clicked.connect(self.login)
+        self.ui.loginButton.clicked.connect(self.login)
         self.adminCollection = MongoClient("mongodb://localhost:27017/")["lms"]["admins"]
+        self.bookCollection = MongoClient("mongodb://localhost:27017/")["lms"]["books"]
+        self.empCollection = MongoClient("mongodb://localhost:27017/")["lms"]["emp"]
+
 
     def login(self):
         uname = self.ui.unameText.text()
