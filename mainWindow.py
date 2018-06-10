@@ -8,6 +8,7 @@ from UI_Files.issueScreen import Ui_issueScreen
 from UI_Files.bookSearchScreen import Ui_BookSearch
 from UI_Files.bookFormScreen import Ui_BookForm
 from UI_Files.empFormScreen import Ui_EmpForm
+from UI_Files.adminFormScreen import Ui_adminForm
 
 def messageBox(self, flag):
     if flag == 1:
@@ -32,6 +33,10 @@ def messageBox(self, flag):
         return QMessageBox.about(self, "Code Error", "Please check the code entered for the employee and try again.")
     if flag == 11:
         return QMessageBox.about(self, "Error", "No record found. Please check the details entered.")
+    if flag == 12:
+        return QMessageBox.about(self, "Error", "Sorry, the username already exists. Please try with a different one.")
+    if flag == 13:
+        return QMessageBox.about(self, "Error", "The passwords don't match. Please try again.")
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -96,7 +101,28 @@ class AppWindow(QMainWindow):
         self.show()
 
     def addNewAdmin(self):
-        print("add new admin")
+        # print("add new admin")
+        self.close()
+        self.ui = Ui_adminForm()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.back)
+        self.ui.saveBtn.clicked.connect(self.saveAdmin)
+        self.show()
+
+    def saveAdmin(self):
+        uname = self.ui.unameText.text()
+        passwd = self.ui.passText.text()
+        passwdConf = self.ui.passConfText.text()
+
+        if passwdConf == passwd:
+            if self.adminCollection.find_one({"username":uname}):
+                messageBox(self, 12)
+            else:
+                self.adminCollection.insert({"username":uname, "password":passwd})
+                messageBox(self, 8)
+                self.back()
+        else:
+            messageBox(self, 13)
 
     def logout(self):
         self.close()
