@@ -7,6 +7,7 @@ from UI_Files.reportScreen import Ui_reportScreen
 from UI_Files.issueScreen import Ui_issueScreen
 from UI_Files.bookSearchScreen import Ui_BookSearch
 from UI_Files.bookFormScreen import Ui_BookForm
+from UI_Files.empFormScreen import Ui_EmpForm
 
 def messageBox(self, flag):
     if flag == 1:
@@ -18,13 +19,19 @@ def messageBox(self, flag):
     if flag == 4:
         return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields to return book(s).")
     if flag == 5:
-        return QMessageBox.critical(self, "Delete Record", "Are you sure you want to delete the record for this book?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        return QMessageBox.critical(self, "Delete Record", "Are you sure you want to delete this record?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
     if flag == 6:
         return QMessageBox.about(self, "Delete Record", "The record has been deleted succesfully.")
     if flag == 7:
-        return QMessageBox.about(self, "Error", "Please check the details entered for the book.")
+        return QMessageBox.about(self, "Error", "Please check the details entered.")
     if flag == 8:
         return QMessageBox.about(self, "Saved", "The record was succesfully saved.")
+    if flag == 9:
+        return QMessageBox.about(self, "Code Error", "Please check the code entered for the book and try again.")
+    if flag == 10:
+        return QMessageBox.about(self, "Code Error", "Please check the code entered for the employee and try again.")
+    if flag == 11:
+        return QMessageBox.about(self, "Error", "No record found. Please check the details entered.")
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -38,6 +45,8 @@ class AppWindow(QMainWindow):
         self.updateRec = False
         self.id = None
 
+    def printTest(self):
+        print("Test Passed.")
 
     def login(self):
         uname = self.ui.unameText.text()
@@ -47,6 +56,9 @@ class AppWindow(QMainWindow):
             self.close()
             self.ui = Ui_issueScreen()
             self.ui.setupUi(self)
+            self.ui.actionAdd_New_Employee.triggered.connect(self.addNewEmp)
+            self.ui.actionAdd_New_Book.triggered.connect(self.addNewBook)
+            self.ui.actionAdd_New_Admin.triggered.connect(self.addNewAdmin)
             self.ui.logout.clicked.connect(self.logout)
             self.ui.generateReportBtn.clicked.connect(self.report)
             self.ui.issueBookBtn.clicked.connect(self.issueBooks)
@@ -64,6 +76,28 @@ class AppWindow(QMainWindow):
             self.ui.unameText.setText("")
             self.ui.passText.setText("")
 
+    def addNewEmp(self):
+        self.close()
+        self.ui = Ui_EmpForm()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.back)
+        self.ui.delBtn.clicked.connect(self.delEmpRecord)
+        self.ui.saveBtn.clicked.connect(self.saveEmpRecord)
+        self.updateRec = False
+        self.show()
+
+    def addNewBook(self):
+        self.close()
+        self.ui = Ui_BookForm()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.back)
+        self.ui.delBtn.clicked.connect(self.delRecord)
+        self.ui.saveBtn.clicked.connect(self.saveRecord)
+        self.show()
+
+    def addNewAdmin(self):
+        print("add new admin")
+
     def logout(self):
         self.close()
         self.ui = Ui_LoginScreen()
@@ -72,10 +106,115 @@ class AppWindow(QMainWindow):
         self.show()
 
     def editBookDetails(self):
-        print("Edit Book Details")
+        code = self.ui.bookEditText.text().upper()
+
+        if bool(re.match(r'^\w\d{3}$', code)):
+            record = self.bookCollection.find_one({"code":code})
+            if not(record):
+                messageBox(self, 11)
+            else:
+                self.close()
+                self.ui = Ui_BookForm()
+                self.ui.setupUi(self)
+                self.ui.backBtn.clicked.connect(self.back)
+                self.ui.delBtn.clicked.connect(self.delRecord)
+                self.ui.saveBtn.clicked.connect(self.saveRecord)
+                self.ui.nameText.setText(record["name"])
+                self.ui.pubText.setText(record["publisher"])
+                self.ui.authText.setText(record["author"])
+                self.ui.nocText.setText(str(record["noc"]))
+                self.ui.codeText.setText(record["code"])
+                self.ui.costText.setText(record["cost"])
+                self.id = self.bookCollection.find_one({"code":record["code"]})["_id"]
+                self.updateRec = True
+                self.show()
+        else:
+            messageBox(self, 9)
 
     def editEmployeeDetails(self):
-        print("Edit Employee Details")
+        # print("Edit Employee Details")
+        pin = self.ui.editEmpText.text()
+
+        if bool(re.match(r'^\d{5}$', pin)):
+            record = self.empCollection.find_one({"PIN":pin})
+            if not(record):
+                messageBox(self, 11)
+            else:
+                self.close()
+                self.ui = Ui_EmpForm()
+                self.ui.setupUi(self)
+                self.ui.backBtn.clicked.connect(self.back)
+                self.ui.delBtn.clicked.connect(self.delEmpRecord)
+                self.ui.saveBtn.clicked.connect(self.saveEmpRecord)
+                self.ui.nameText.setText(record["name"])
+                self.ui.deptText.setText(record["dept"])
+                self.ui.contText.setText(record["contact"])
+                self.ui.pinText.setText(record["PIN"])
+                self.id = self.empCollection.find_one({"PIN":pin})["_id"]
+                self.updateRec = True
+                self.show()
+        else:
+            messageBox(self, 10)
+
+    def saveEmpRecord(self):
+        pin = self.ui.pinText.text()
+        name = self.ui.nameText.text()
+        dept = self.ui.deptText.text()
+        contact = self.ui.contText.text()
+
+        if self.updateRec and self.validateEmpForm():
+            self.updateRec = False
+            self.empCollection.update({"_id":self.id}, {'$set':{"name":name, "PIN":pin, "dept": dept, "contact":contact, "issueID":""}})
+            # print(self.bookCollection.find_one({"code":code})["_id"])
+            messageBox(self, 8)
+            self.id = None
+            # print("update")
+            self.back()
+        elif self.updateRec == False and self.validateEmpForm():
+            self.empCollection.insert({"name":name, "PIN":pin, "dept": dept, "contact":contact, "issueID":""})
+            messageBox(self, 8)
+            # print("add new")
+            self.back()
+        else:
+            messageBox(self, 7)
+
+    def validateEmpForm(self):
+        flag = True
+
+        pin = self.ui.pinText.text()
+        name = self.ui.nameText.text()
+        dept = self.ui.deptText.text()
+        contact = self.ui.contText.text()
+
+        pinPat = re.compile(r'^\d{5}$')
+        if not bool(re.match(pinPat, pin)):
+            print("pin failed", pin)
+            flag = False
+
+        contactPat = re.compile(r'^\d{10}$')
+        if not bool(re.match(contactPat, contact)):
+            print("contact failed", len(contact))
+            flag = False
+
+        if len(name) < 1: #not bool(re.match(namePat, name)):
+            flag = False
+            print("name failed")
+
+        if len(dept) < 4:
+            flag = False
+            print("dept failed")
+
+        return flag
+
+    def delEmpRecord(self):
+        pin = self.ui.pinText.text()
+        # print(QMessageBox.Yes == messageBox(self, 5))
+        # print(code)
+        if QMessageBox.Yes == messageBox(self, 5):
+            # print("true")
+            self.bookCollection.remove({"PIN":pin})
+            messageBox(self, 6)
+            self.back()
 
     def searchBooksWin(self):
         self.close()
@@ -124,8 +263,9 @@ class AppWindow(QMainWindow):
             self.bookCollection.update({"_id":self.id}, {'$set':{"name":name, "code":code, "publisher": publisher, "author":author, "noc":int(noc), "cost":cost, "issueID":""}})
             # print(self.bookCollection.find_one({"code":code})["_id"])
             messageBox(self, 8)
+            self.id = None
             self.back()
-        elif self.updateRec == False and self.bookCollection.find_one({"code":code}) and self.validateBookForm():
+        elif self.updateRec == False and not(self.bookCollection.find_one({"code":code})) and self.validateBookForm():
             self.bookCollection.insert({"name":name, "code":code, "publisher": publisher, "author":author, "noc":int(noc), "cost":cost, "issueID":""})
             messageBox(self, 8)
             self.back()
@@ -233,6 +373,9 @@ class AppWindow(QMainWindow):
         self.close()
         self.ui = Ui_issueScreen()
         self.ui.setupUi(self)
+        self.ui.actionAdd_New_Employee.triggered.connect(self.addNewEmp)
+        self.ui.actionAdd_New_Book.triggered.connect(self.addNewBook)
+        self.ui.actionAdd_New_Admin.triggered.connect(self.addNewAdmin)
         self.ui.logout.clicked.connect(self.logout)
         self.ui.generateReportBtn.clicked.connect(self.report)
         self.ui.issueBookBtn.clicked.connect(self.issueBooks)

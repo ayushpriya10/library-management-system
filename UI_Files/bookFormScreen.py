@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BookForm(object):
     def setupUi(self, BookForm):
         BookForm.setObjectName("BookForm")
-        BookForm.resize(650, 380)
+        BookForm.resize(650, 410)
         BookForm.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         BookForm.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(BookForm)

@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_reportScreen(object):
     def setupUi(self, mainScreen):
         mainScreen.setObjectName("mainScreen")
-        mainScreen.resize(600, 350)
+        mainScreen.resize(600, 380)
         mainScreen.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         mainScreen.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(mainScreen)

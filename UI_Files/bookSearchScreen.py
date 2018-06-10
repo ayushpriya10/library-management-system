@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BookSearch(object):
     def setupUi(self, BookSearch):
         BookSearch.setObjectName("BookSearch")
-        BookSearch.resize(760, 610)
+        BookSearch.resize(760, 640)
         BookSearch.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         BookSearch.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(BookSearch)

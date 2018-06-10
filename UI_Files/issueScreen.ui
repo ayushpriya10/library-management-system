@@ -271,6 +271,40 @@
     </widget>
    </widget>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>699</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionAdd_New_Employee"/>
+    <addaction name="actionAdd_New_Book"/>
+    <addaction name="actionAdd_New_Admin"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <action name="actionAdd_New_Employee">
+   <property name="text">
+    <string>Add New Employee</string>
+   </property>
+  </action>
+  <action name="actionAdd_New_Book">
+   <property name="text">
+    <string>Add New Book</string>
+   </property>
+  </action>
+  <action name="actionAdd_New_Admin">
+   <property name="text">
+    <string>Add New Admin</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
