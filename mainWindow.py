@@ -1,5 +1,6 @@
 import sys
 from pymongo import MongoClient
+import re
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from UI_Files.startScreen import Ui_LoginScreen
 from UI_Files.reportScreen import Ui_reportScreen
@@ -16,17 +17,26 @@ def messageBox(self, flag):
         return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields to issue book(s).")
     if flag == 4:
         return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields to return book(s).")
+    if flag == 5:
+        return QMessageBox.critical(self, "Delete Record", "Are you sure you want to delete the record for this book?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+    if flag == 6:
+        return QMessageBox.about(self, "Delete Record", "The record has been deleted succesfully.")
+    if flag == 7:
+        return QMessageBox.about(self, "Error", "Please check the details entered for the book.")
+    if flag == 8:
+        return QMessageBox.about(self, "Saved", "The record was succesfully saved.")
 
 class AppWindow(QMainWindow):
     def __init__(self):
         super(AppWindow, self).__init__()
-        # self.ui = Ui_BookForm()
         self.ui = Ui_LoginScreen()
         self.ui.setupUi(self)
         self.ui.loginButton.clicked.connect(self.login)
         self.adminCollection = MongoClient("mongodb://localhost:27017/")["lms"]["admins"]
         self.bookCollection = MongoClient("mongodb://localhost:27017/")["lms"]["books"]
         self.empCollection = MongoClient("mongodb://localhost:27017/")["lms"]["emp"]
+        self.updateRec = False
+        self.id = None
 
 
     def login(self):
@@ -73,11 +83,125 @@ class AppWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.backBtn.clicked.connect(self.back)
         self.ui.searchStr.textEdited.connect(self.searchBooks)
+        self.ui.editBtn.clicked.connect(self.editBook)
+        for i in self.bookCollection.find():
+            if i["noc"] > -1:
+                self.ui.listWidget.addItem(i["name"] + " " + i["code"])
         self.show()
 
+    def editBook(self):
+        item = self.ui.listWidget.currentItem().text().split(" ")
+
+        # print(item[len(item)-1])
+        record = self.bookCollection.find_one({"code":item[len(item)-1]})
+        # print(record)
+        self.close()
+        self.ui = Ui_BookForm()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.back)
+        self.ui.delBtn.clicked.connect(self.delRecord)
+        self.ui.saveBtn.clicked.connect(self.saveRecord)
+        self.ui.nameText.setText(record["name"])
+        self.ui.pubText.setText(record["publisher"])
+        self.ui.authText.setText(record["author"])
+        self.ui.nocText.setText(str(record["noc"]))
+        self.ui.codeText.setText(record["code"])
+        self.ui.costText.setText(record["cost"])
+        self.id = self.bookCollection.find_one({"code":record["code"]})["_id"]
+        self.updateRec = True
+        self.show()
+
+    def saveRecord(self):
+        code = self.ui.codeText.text().upper()
+        name = self.ui.nameText.text()
+        publisher = self.ui.pubText.text()
+        author = self.ui.authText.text()
+        noc = self.ui.nocText.text()
+        cost = self.ui.costText.text()
+        # print(code)
+        if self.updateRec and self.validateBookForm():
+            self.updateRec = False
+            self.bookCollection.update({"_id":self.id}, {'$set':{"name":name, "code":code, "publisher": publisher, "author":author, "noc":int(noc), "cost":cost, "issueID":""}})
+            # print(self.bookCollection.find_one({"code":code})["_id"])
+            messageBox(self, 8)
+            self.back()
+        elif self.updateRec == False and self.bookCollection.find_one({"code":code}) and self.validateBookForm():
+            self.bookCollection.insert({"name":name, "code":code, "publisher": publisher, "author":author, "noc":int(noc), "cost":cost, "issueID":""})
+            messageBox(self, 8)
+            self.back()
+        else:
+            messageBox(self, 7)
+
+    def validateBookForm(self):
+        flag = True
+
+        code = self.ui.codeText.text().upper()
+        name = self.ui.nameText.text()
+        publisher = self.ui.pubText.text()
+        author = self.ui.authText.text()
+        noc = self.ui.nocText.text()
+        cost = self.ui.costText.text()
+
+        codePat = re.compile(r'^\w\d{3}$')
+        if not bool(re.match(codePat, code)):
+            flag = False
+            print("code failed")
+
+        namePat = re.compile(r'\w+')
+        if len(name) < 5: #not bool(re.match(namePat, name)):
+            flag = False
+            print("name failed")
+
+        if len(publisher) < 1:
+            flag = False
+            print("pub failed")
+
+        if len(author) < 1:
+            flag = False
+            print("auth failed")
+
+        nocPat = re.compile(r'^\d+$')
+        if ((not bool(re.match(nocPat, str(noc)))) and noc < 0):
+            flag = False
+            print("noc failed")
+
+        costPat = re.compile(r'^\d+$')
+        if ((not bool(re.match(costPat, cost))) and float(cost) < 1):
+            flag = False
+            print("cost failed")
+
+        return flag
+
+    def delRecord(self):
+        code = self.ui.codeText.text()
+        # print(QMessageBox.Yes == messageBox(self, 5))
+        # print(code)
+        if QMessageBox.Yes == messageBox(self, 5):
+            # print("true")
+            self.bookCollection.remove({"code":code})
+            messageBox(self, 6)
+            self.back()
+        # else:
+        #     print("false")
+
     def searchBooks(self):
-        print(self.ui.searchStr.text())
-        print(self.ui.comboBox.currentText())
+        # print(self.ui.searchStr.text())
+        # print(self.ui.comboBox.currentText())
+        searchStr = self.ui.searchStr.text()
+        cat = self.ui.comboBox.currentText()
+        self.ui.listWidget.clear()
+
+        if searchStr == "":
+            for i in self.bookCollection.find():
+                if i["noc"] > -1:
+                    self.ui.listWidget.addItem(i["name"])
+
+        for i in self.bookCollection.find():
+            # print(cat.lower()[0], i["code"], searchStr.lower(), i["name"])
+
+            if cat[0] in i["code"] and searchStr.lower() in i["name"].lower():
+                # print(cat.lower()[0], i["code"], searchStr.lower(), i["name"])
+                self.ui.listWidget.addItem(i["name"])
 
     def issueBooks(self):
         book1 = self.ui.book1Text.text()

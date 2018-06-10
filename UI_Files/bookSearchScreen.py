@@ -35,6 +35,7 @@ class Ui_BookSearch(object):
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
         self.listWidget.setGeometry(QtCore.QRect(20, 130, 710, 400))
         self.listWidget.setObjectName("listWidget")
+        self.listWidget.setAlternatingRowColors (True)
         self.editBtn = QtWidgets.QPushButton(self.centralwidget)
         self.editBtn.setGeometry(QtCore.QRect(500, 550, 100, 35))
         self.editBtn.setObjectName("editBtn")
