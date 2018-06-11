@@ -1,0 +1,4 @@
+The following books are issued most frequently:
+2	Fundamentals of Engineering Thermodynamics
+1	Engineering Mechanics of Solids
+1	Numeric Methods for Scientists and Engineers

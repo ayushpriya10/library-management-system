@@ -1,0 +1,33 @@
+Total no. of employees: 26
+
+Total no. of employess who have issued books: 2
+
+The employess who have issued books are as follows:
+Beatrice Sloan	00007
+Ibrahim Merritt	00005
+
+The employess who haven't issued any books are as follows:
+Sophia Jenkins	00001
+Yoselin Delgado	00002
+Carter Proctor	00003
+Maurice Henderson	00004
+Liana Shepard	00006
+Warren Pittman	00008
+Jude Watts	00009
+hayden Nielsen	00010
+Rylee Roth	00011
+Aron Chaney	00012
+Kasey Cross	00013
+Pamela Logan	00014
+Lily Moses	00015
+Gage Espinoza	00016
+Killian Middleton	00017
+Conner Novak	00018
+Izayah Hess	00019
+Danna Bowman	00020
+Scarlet Gonzalez	00021
+Thaddeus Olson	00022
+Raven Burns	00023
+Elvis Skinner	00024
+Jace Reilly	00025
+Ayush	00100

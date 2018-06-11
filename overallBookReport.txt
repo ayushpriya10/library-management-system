@@ -1,0 +1,27 @@
+Total no. of books in the library: 17
+
+Total no. of books issued: 4
+
+List of books available are as follows:
+Fundamentals of Engineering Thermodynamics	G111
+800 solved problems in Vector Mechanics for Engineers (Vol 1)	G002
+700 solved problems in Vector Mechanics for Engineers (Vol 2)	G003
+Mechanics of Materials	M000
+Engineering Mechanics of Solids	M001
+Numeric Methods for Scientists and Engineers	M002
+Fundamentals of Engineering Numerical Analysis	M003
+Fundamentals of Heat and Mass Transfer	T000
+Fundamentals of fluid Mechanics	T101
+Fluid Mechanics	T002
+A text book of Machine Design	T003
+The Mechanical Design Process	F000
+Instrumentation for Process Measurement and Control	F001
+Refrigeration and Air Conditioning Technology	F002
+Refrigeration	F003
+Fundamentals of Flight	F004
+The primer on Python Programming	T111
+
+List of books issued are as follows:
+Fundamentals of Engineering Thermodynamics	G111
+Engineering Mechanics of Solids	M001
+Numeric Methods for Scientists and Engineers	M002

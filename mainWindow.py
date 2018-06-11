@@ -1,6 +1,8 @@
 import sys
 from pymongo import MongoClient
 import re
+import datetime
+from os import system
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from UI_Files.startScreen import Ui_LoginScreen
 from UI_Files.reportScreen import Ui_reportScreen
@@ -16,9 +18,9 @@ def messageBox(self, flag):
     if flag == 2:
         return QMessageBox.about(self, "Login Error", "Please enter both username and password and try again.")
     if flag == 3:
-        return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields to issue book(s).")
+        return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields correctly to issue book(s).")
     if flag == 4:
-        return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields to return book(s).")
+        return QMessageBox.about(self, "Incomplete Details", "Please fill all three fields correctly to return book(s).")
     if flag == 5:
         return QMessageBox.critical(self, "Delete Record", "Are you sure you want to delete this record?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
     if flag == 6:
@@ -37,6 +39,22 @@ def messageBox(self, flag):
         return QMessageBox.about(self, "Error", "Sorry, the username already exists. Please try with a different one.")
     if flag == 13:
         return QMessageBox.about(self, "Error", "The passwords don't match. Please try again.")
+    if flag == 14:
+        return QMessageBox.about(self, "Book Issue", "The books are issued succesfully.")
+    if flag == 15:
+        return QMessageBox.about(self, "Book Issue Error", "The employee already has issued books.")
+    if flag == 16:
+        return QMessageBox.about(self, "Not Found", "Employee not found! Try again.")
+    if flag == 17:
+        return QMessageBox.about(Self, "Not Found", "Book not found. Please try again.")
+    if flag == 18:
+        return QMessageBox.about(self, "Unavailable", "Book not available.")
+    if flag == 19:
+        return QMessageBox.about(self, "No Books Issued", "The employee doesn't have any books issued.")
+    if flag == 20:
+        return QMessageBox.about(self, "Book Issue", "The books are returned succesfully.")
+    if flag == 21:
+        return QMessageBox.about(self, "Report Generation", "Report was generated succesfully.")
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -47,6 +65,7 @@ class AppWindow(QMainWindow):
         self.adminCollection = MongoClient("mongodb://localhost:27017/")["lms"]["admins"]
         self.bookCollection = MongoClient("mongodb://localhost:27017/")["lms"]["books"]
         self.empCollection = MongoClient("mongodb://localhost:27017/")["lms"]["emp"]
+        self.issuedCollection = MongoClient("mongodb://localhost:27017/")["lms"]["issued"]
         self.updateRec = False
         self.id = None
 
@@ -370,30 +389,89 @@ class AppWindow(QMainWindow):
                 self.ui.listWidget.addItem(i["name"])
 
     def issueBooks(self):
-        book1 = self.ui.book1Text.text()
-        book2 = self.ui.book2Text.text()
+        book1 = self.ui.book1Text.text().upper()
+        book2 = self.ui.book2Text.text().upper()
         empPIN = self.ui.empPinText.text()
+        today = datetime.date.today()
 
-        if book1 and book2 and empPIN:
-            print(book1, book2, empPIN)
+        if bool(re.match(r"^\w\d{3}$", book1.upper())) and bool(re.match(r"^\w\d{3}$", book2.upper())) and bool(re.match(r"^\d{5}$", empPIN)) and not(book1 == book2):
+            # print(book1, book2, empPIN)
+            emp = self.empCollection.find_one({"PIN":empPIN})
+            b1 = self.bookCollection.find_one({"code":book1})
+            b2 = self.bookCollection.find_one({"code":book2})
+
+            if emp != None:
+                if emp["issueID"] == "":
+                    empID = emp["_id"]
+                    if b1 != None and b2 != None and b1 != b2:
+                        if b1["noc"] > 0 and b2["noc"] > 0:
+                            self.issuedCollection.insert({"book1":book1, "book2":book2, "PIN":empPIN, "issueDate":str(today), "returnDate":str(today + datetime.timedelta(15)), "actualReturnDate":"", "fine":"", "fineDue":False})
+                            record = self.issuedCollection.find_one({"book1":book1, "book2":book2, "PIN":empPIN})
+                            self.empCollection.update({"_id":empID}, {'$set':{"name":emp["name"], "PIN":emp["PIN"], "dept": emp["dept"], "contact":emp["contact"], "issueID":record["_id"]}})
+                            cost1 = b1['cost']
+                            cost2 = b2['cost']
+                            self.bookCollection.update({"_id":b1["_id"]}, {'$set':{"name":b1["name"], "code":b1["code"], "publisher": b1["publisher"], "author":b1["author"], "noc":b1["noc"]-1, "cost":cost1, "issueID":record["_id"]}})
+                            self.bookCollection.update({"_id":b2["_id"]}, {'$set':{"name":b2["name"], "code":b2["code"], "publisher": b2["publisher"], "author":b2["author"], "noc":b2["noc"]-1, "cost":cost2, "issueID":record["_id"]}})
+                            messageBox(self, 14)
+                            self.ui.book1Text.setText("")
+                            self.ui.book2Text.setText("")
+                            self.ui.empPinText.setText("")
+                        else:
+                            messageBox(self, 18)
+                    else:
+                        messageBox(self, 17)
+                else:
+                    messageBox(self, 15)
+            else:
+                messageBox(self, 16)
         else:
             messageBox(self, 3)
-            self.ui.book1Text.setText("")
-            self.ui.book2Text.setText("")
-            self.ui.empPinText.setText("")
 
     def returnBooks(self):
-        book1 = self.ui.book1Text.text()
-        book2 = self.ui.book2Text.text()
+        book1 = self.ui.book1Text.text().upper()
+        book2 = self.ui.book2Text.text().upper()
         empPIN = self.ui.empPinText.text()
+        today = datetime.date.today()
 
-        if book1 and book2 and empPIN:
-            print(book1, book2, empPIN)
+        if bool(re.match(r"^\w\d{3}$", book1.upper())) and bool(re.match(r"^\w\d{3}$", book2.upper())) and bool(re.match(r"^\d{5}$", empPIN)) and not(book1 == book2):
+            # print(book1, book2, empPIN)
+            emp = self.empCollection.find_one({"PIN":empPIN})
+            b1 = self.bookCollection.find_one({"code":book1})
+            b2 = self.bookCollection.find_one({"code":book2})
+
+            if emp != None:
+                if emp["issueID"] != "":
+                    empID = emp["_id"]
+                    if b1 != None and b2 != None and b1 != b2:
+                        record = self.issuedCollection.find_one({"book1":book1, "book2":book2, "PIN":empPIN})
+                        year, month, day = [int(i) for i in record["returnDate"].split("-")]
+                        t = datetime.date(year, month, day)
+
+                        if (today-t).days < 1:
+                            flag = False
+                            amount = ""
+                        else:
+                            flag = True
+                            amount = (today - t).days * 10
+
+                        self.issuedCollection.update({"_id":record["_id"]}, {'$set':{"book1":book1, "book2":book2, "PIN":empPIN, "issueDate":record["issueDate"], "returnDate":record["returnDate"], "actualReturnDate":str(today), "fine":amount, "fineDue":flag}})
+                        self.empCollection.update({"_id":empID}, {'$set':{"name":emp["name"], "PIN":emp["PIN"], "dept": emp["dept"], "contact":emp["contact"], "issueID":""}})
+                        cost1 = b1['cost']
+                        cost2 = b2['cost']
+                        self.bookCollection.update({"_id":b1["_id"]}, {'$set':{"name":b1["name"], "code":b1["code"], "publisher": b1["publisher"], "author":b1["author"], "noc":b1["noc"]+1, "cost":cost1, "issueID":""}})
+                        self.bookCollection.update({"_id":b2["_id"]}, {'$set':{"name":b2["name"], "code":b2["code"], "publisher": b2["publisher"], "author":b2["author"], "noc":b2["noc"]+1, "cost":cost2, "issueID":""}})
+                        messageBox(self, 20)
+                        self.ui.book1Text.setText("")
+                        self.ui.book2Text.setText("")
+                        self.ui.empPinText.setText("")
+                    else:
+                        messageBox(self, 17)
+                else:
+                    messageBox(self, 19)
+            else:
+                messageBox(self, 16)
         else:
             messageBox(self, 4)
-            self.ui.book1Text.setText("")
-            self.ui.book2Text.setText("")
-            self.ui.empPinText.setText("")
 
     def back(self):
         self.close()
@@ -416,7 +494,156 @@ class AppWindow(QMainWindow):
         self.ui = Ui_reportScreen()
         self.ui.setupUi(self)
         self.ui.back.clicked.connect(self.back)
+        self.ui.generateBookDetail.clicked.connect(self.overallBookReport)
+        self.ui.generateOverallReport.clicked.connect(self.overallEmpReport)
+        self.ui.generateBookReport.clicked.connect(self.bookStats)
+        self.ui.generateEmpReport.clicked.connect(self.empStats)
         self.show()
+
+    def bookStats(self):
+        records = self.issuedCollection.find()
+        codes = []
+        maxCodes = []
+
+        for i in records:
+            codes.append(i["book1"])
+            codes.append(i["book2"])
+
+        stats = dict()
+
+        for i in codes:
+            stats[i] = codes.count(i)
+
+        counts = list(reversed(sorted(list(stats.values()))))
+        printStr = "The following books are issued most frequently:"
+
+        while counts:
+            for i in codes:
+                if i not in maxCodes:
+                    if stats[i] == counts[0]:
+                        maxCodes.append(i)
+                        counts.pop(0)
+
+        for i in maxCodes:
+            name = self.bookCollection.find_one({"code":i})["name"]
+            printStr += "\n" + str(stats[i]) + "\t" + name
+
+        file = open("topBooks.txt", "w")
+        file.write(printStr)
+        file.close()
+        messageBox(self,21)
+        system("notepad topBooks.txt")
+
+    def empStats(self):
+        records = self.issuedCollection.find()
+        pins = []
+        maxPins = []
+        for i in records:
+            pins.append(i["PIN"])
+
+        stats = dict()
+
+        for i in pins:
+            stats[i] = pins.count(i)
+
+        counts = list(reversed(sorted(list(stats.values()))))
+        printStr = "The following are the employees who issue books most frequently:"
+        while counts:
+            for i in pins:
+                if i not in maxPins:
+                    if stats[i] == counts[0]:
+                        maxPins.append(i)
+                        counts.pop(0)
+
+        for i in maxPins:
+            name = self.empCollection.find_one({"PIN":i})["name"]
+            printStr += "\n" + str(stats[i]) + "\t" + name
+
+        file = open("topIssuers.txt", "w")
+        file.write(printStr)
+        file.close()
+        messageBox(self,21)
+        system("notepad topIssuers.txt")
+
+    def overallEmpReport(self):
+        records = self.empCollection.find()
+        printStr = str()
+        totalEmp = int()
+        totalEmpIssued = int()
+        totalDef = int()
+        noIssueEmp = "\n\nThe employess who haven't issued any books are as follows:"
+        issueEmp = "\n\nThe employess who have issued books are as follows:"
+        defaulters = "\n\nThe employees who are yet to pay their fine are as follows:"
+
+        empIssued = []
+        for i in self.issuedCollection.find():
+            empIssued.append(i["PIN"])
+            totalEmpIssued += 1
+
+            if i["fine"] != "" and i["fineDue"]:
+                totalDef += 1
+                rec = self.empCollection.find_one({"PIN":i["PIN"]})
+                defaulters += rec["name"] + "\t" + rec["PIN"]
+
+        for i in records:
+            totalEmp += 1
+            if i["PIN"] not in empIssued:
+                noIssueEmp += "\n" + i["name"] + "\t" + i["PIN"]
+
+        for i in set(empIssued):
+            rec = self.empCollection.find_one({"PIN":i})
+            issueEmp += "\n" + rec["name"] + "\t" + rec["PIN"]
+
+        printStr = "Total no. of employees: " + str(totalEmp) + "\n\nTotal no. of employess who have issued books: " + str(totalEmpIssued)
+
+        if totalDef > 0:
+            printstr += "\n\nTotal no. of defaulters: " + str(totalDef)
+
+            printStr += defaulters
+
+        printStr += issueEmp + noIssueEmp
+        file = open("overallEmpReport.txt" , "w")
+        file.write(printStr)
+        file.close()
+        messageBox(self, 21)
+        system("notepad overallEmpReport.txt")
+
+
+    def overallBookReport(self):
+        records = self.bookCollection.find()
+        printStr = str()
+        totalBooks = int()
+        totalIssued = int()
+        avlBooksStr = "\n\nList of books available are as follows:"
+        issuedBooksStr = "\n\nList of books issued are as follows:"
+
+        for i in records:
+            totalBooks += 1
+
+            if i["noc"] > 0:
+                avlBooksStr += "\n" + i["name"] + "\t" + i["code"]
+
+        iRecords = self.issuedCollection.find()
+        issued = []
+        for i in iRecords:
+            totalIssued += 2
+            b1 = i["book1"]
+            b2 = i["book2"]
+            issued.append(b1)
+            issued.append(b2)
+
+        issued = set(issued)
+
+        for i in issued:
+            name = self.bookCollection.find_one({"code":i})["name"]
+            issuedBooksStr += "\n" + name + "\t" + i
+
+        printStr = "Total no. of books in the library: " + str(totalBooks) + "\n\n" + "Total no. of books issued: " + str(totalIssued) + avlBooksStr + issuedBooksStr
+        file = open("overallBookReport.txt", "w")
+        file.write(printStr)
+        file.close()
+        messageBox(self, 21)
+        system("notepad overallBookReport.txt")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
