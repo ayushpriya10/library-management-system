@@ -32,3 +32,6 @@ for i in empDetails:
     # print(code, name, contact, dept)
 
     empCollection.insert({"PIN":code, "name":name, "contact":contact, "dept":dept, "issueID":""})
+    
+    
+    .
