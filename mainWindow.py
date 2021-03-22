@@ -46,7 +46,7 @@ def messageBox(self, flag):
     if flag == 16:
         return QMessageBox.about(self, "Not Found", "Employee not found! Try again.")
     if flag == 17:
-        return QMessageBox.about(self, "Not Found", "Book not found. Please try again.")
+        return QMessageBox.about(Self, "Not Found", "Book not found. Please try again.")
     if flag == 18:
         return QMessageBox.about(self, "Unavailable", "Book not available.")
     if flag == 19:
@@ -597,7 +597,7 @@ class AppWindow(QMainWindow):
         printStr = "Total no. of employees: " + str(totalEmp) + "\n\nTotal no. of employess who have issued books: " + str(totalEmpIssued)
 
         if totalDef > 0:
-            printStr += "\n\nTotal no. of defaulters: " + str(totalDef)
+            printstr += "\n\nTotal no. of defaulters: " + str(totalDef)
 
             printStr += defaulters
 
