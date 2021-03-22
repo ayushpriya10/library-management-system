@@ -403,7 +403,7 @@ class AppWindow(QMainWindow):
             if emp != None:
                 if emp["issueID"] == "":
                     empID = emp["_id"]
-                    if b1 != None and b2 != None and b1 != b2:
+                    if b1 != None or b2 != None and b1 != b2:
                         if b1["noc"] > 0 and b2["noc"] > 0:
                             self.issuedCollection.insert({"book1":book1, "book2":book2, "PIN":empPIN, "issueDate":str(today), "returnDate":str(today + datetime.timedelta(15)), "actualReturnDate":"", "fine":"", "fineDue":False})
                             record = self.issuedCollection.find_one({"book1":book1, "book2":book2, "PIN":empPIN})
